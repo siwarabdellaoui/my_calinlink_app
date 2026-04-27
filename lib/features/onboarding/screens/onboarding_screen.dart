@@ -71,7 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF0F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -82,11 +82,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: const EdgeInsets.all(16),
                 child: GestureDetector(
                   onTap: _skip,
-                  child: const Text(
+                  child: Text(
                     'Passer',
                     style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withValues(alpha: 0.6) ??
+                          AppColors.textSecondary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -100,8 +105,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 controller: _pageController,
                 onPageChanged: (i) => setState(() => _currentPage = i),
                 itemCount: _pages.length,
-                itemBuilder: (context, i) =>
-                    _OnboardingPage(data: _pages[i]),
+                itemBuilder: (context, i) => _OnboardingPage(data: _pages[i]),
               ),
             ),
 
@@ -149,13 +153,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         _currentPage == _pages.length - 1
                             ? 'Commencer'
                             : 'Continuer',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(
+                       Icon(
                         Icons.arrow_forward_rounded,
                         size: 20,
                       ),
@@ -257,7 +261,7 @@ class _OnboardingPage extends StatelessWidget {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -291,17 +295,26 @@ class _OnboardingPage extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.color
+                                          ?.withValues(alpha: 0.6) ??
+                                      AppColors.textSecondary,
                                   letterSpacing: 1,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 data.badgeText,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textPrimary,
+                                  color: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.color ??
+                                      AppColors.textPrimary,
                                 ),
                               ),
                             ],
@@ -325,7 +338,7 @@ class _OnboardingPage extends StatelessWidget {
                 Text(
                   data.title,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
                     color: AppColors.primary,
@@ -336,9 +349,14 @@ class _OnboardingPage extends StatelessWidget {
                 Text(
                   data.description,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.color
+                            ?.withValues(alpha: 0.6) ??
+                        AppColors.textSecondary,
                     height: 1.6,
                   ),
                 ),

@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/router/app_router.dart';
-
+import '../../../shared/providers/sensor_provider.dart';
+import '../../../shared/providers/user_provider.dart';
 export 'home_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(userProfileProvider.notifier).fetchProfile();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF0F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -48,6 +63,8 @@ class HomeScreen extends StatelessWidget {
 
   // Header avec avatar et notification
   Widget _buildHeader(BuildContext context) {
+    final userProfile = ref.watch(userProfileProvider);
+
     return Row(
       children: [
         // Avatar
@@ -67,10 +84,12 @@ class HomeScreen extends StatelessWidget {
         const SizedBox(width: 12),
 
         // Bonjour
-        const Expanded(
+        Expanded(
           child: Text(
-            'Bonjour, Sophie',
-            style: TextStyle(
+            userProfile.firstName.isNotEmpty
+                ? 'Bonjour, ${userProfile.firstName}'
+                : 'Bonjour',
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
@@ -127,7 +146,7 @@ class HomeScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -218,6 +237,8 @@ class HomeScreen extends StatelessWidget {
 
   // Grille des 4 métriques
   Widget _buildMetricsGrid(BuildContext context) {
+    final sensorData = ref.watch(sensorProvider);
+
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -231,7 +252,7 @@ class HomeScreen extends StatelessWidget {
           icon: Icons.thermostat_rounded,
           iconColor: AppColors.warning,
           label: 'Température',
-          value: '22.5°C',
+          value: '${sensorData.temperature}°C',
           badge: 'IDÉAL',
           badgeColor: AppColors.success,
           onTap: () => context.go(AppRoutes.surveillance),
@@ -242,7 +263,7 @@ class HomeScreen extends StatelessWidget {
           icon: Icons.water_drop_rounded,
           iconColor: AppColors.secondary,
           label: 'Humidité',
-          value: '55%',
+          value: '${sensorData.humidity}%',
           onTap: () => context.go(AppRoutes.surveillance),
         ),
 
@@ -270,16 +291,16 @@ class HomeScreen extends StatelessWidget {
   // Boutons raccourcis en bas
   Widget _buildShortcuts(BuildContext context) {
     final shortcuts = [
-      (Icons.videocam_rounded,          'Caméra',    AppRoutes.surveillance),
-      (Icons.tune_rounded,              'Contrôle',  AppRoutes.control),
-      (Icons.notifications_rounded,     'Alertes',   AppRoutes.alerts),
-      (Icons.bar_chart_rounded,         'Stats',     AppRoutes.settings),
+      (Icons.videocam_rounded, 'Caméra', AppRoutes.camera),
+      (Icons.tune_rounded, 'Contrôle', AppRoutes.control),
+      (Icons.notifications_rounded, 'Alertes', AppRoutes.alerts),
+      (Icons.bar_chart_rounded, 'Stats', AppRoutes.stats),
     ];
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -292,7 +313,7 @@ class HomeScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: shortcuts.map((s) {
           return GestureDetector(
-            onTap: () => context.go(s.$3),
+            onTap: () => context.push(s.$3),
             child: Column(
               children: [
                 Container(
@@ -349,7 +370,7 @@ class _MetricCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFFAF0F5),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: AppColors.primary.withOpacity(0.1),

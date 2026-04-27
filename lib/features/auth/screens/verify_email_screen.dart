@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/router/app_router.dart';
-
-export 'verify_email_screen.dart';
+import '../../../core/network/auth_service.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
-  const VerifyEmailScreen({super.key});
+  final String email;
+
+  const VerifyEmailScreen({super.key, required this.email});
 
   @override
   State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
@@ -15,8 +16,7 @@ class VerifyEmailScreen extends StatefulWidget {
 class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   final List<TextEditingController> _controllers =
       List.generate(6, (_) => TextEditingController());
-  final List<FocusNode> _focusNodes =
-      List.generate(6, (_) => FocusNode());
+  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
 
   bool _isLoading = false;
   int _secondsRemaining = 54;
@@ -38,8 +38,16 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     if (mounted) setState(() => _canResend = true);
   }
 
-  void _resendCode() {
+  void _resendCode() async {
     if (!_canResend) return;
+
+    // Renvoyer le code
+    try {
+      await AuthService.forgotPassword(widget.email);
+    } catch (e) {
+      // Échec de renvoi
+    }
+
     setState(() {
       _secondsRemaining = 54;
       _canResend = false;
@@ -54,7 +62,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     if (code.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Veuillez entrer le code complet à 6 chiffres'),
+          content: Text('Veuillez entrer le code complet à 6 chiffres'),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -66,10 +74,23 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     }
 
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      setState(() => _isLoading = false);
-      context.go(AppRoutes.onboarding);
+
+    try {
+      final resetToken = await AuthService.verifyResetCode(widget.email, code);
+      if (mounted) {
+        setState(() => _isLoading = false);
+        context.push(AppRoutes.resetPassword, extra: resetToken);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Code incorrect ou expiré'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 
@@ -93,7 +114,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF0F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -106,13 +127,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0E8F8),
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(28),
                 ),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    const Icon(
+                     Icon(
                       Icons.mark_email_read_outlined,
                       size: 64,
                       color: AppColors.secondary,
@@ -127,7 +148,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                           color: Colors.amber,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.lightbulb_rounded,
                           size: 12,
                           color: Colors.white,
@@ -141,23 +162,29 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               const SizedBox(height: 36),
 
               // Titre
-              const Text(
-                'Vérifie ton email',
+               Text(
+                'Code de vérification',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).textTheme.bodyMedium?.color ??
+                      AppColors.textPrimary,
                 ),
               ),
 
               const SizedBox(height: 12),
 
-              const Text(
+              Text(
                 'Nous t\'avons envoyé un code à 6 chiffres\npour sécuriser ton compte CâlinLink.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.color
+                          ?.withValues(alpha: 0.6) ??
+                      AppColors.textSecondary,
                   height: 1.6,
                 ),
               ),
@@ -178,17 +205,18 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                       textAlign: TextAlign.center,
                       maxLength: 1,
                       onChanged: (v) => _onChanged(v, i),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).textTheme.bodyMedium?.color ??
+                            AppColors.textPrimary,
                       ),
                       decoration: InputDecoration(
                         counterText: '',
                         filled: true,
                         fillColor: _controllers[i].text.isNotEmpty
-                          ? AppColors.primary.withOpacity(0.12)
-                          : const Color(0xFFEEE0EA),
+                            ? AppColors.primary.withOpacity(0.12)
+                            : const Color(0xFFEEE0EA),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide.none,
@@ -213,11 +241,16 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "Vous n'avez rien reçu ? ",
                     style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withValues(alpha: 0.6) ??
+                          AppColors.textSecondary,
                     ),
                   ),
                   GestureDetector(
@@ -228,8 +261,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: _canResend
-                          ? AppColors.secondary
-                          : AppColors.textSecondary,
+                            ? AppColors.secondary
+                            : AppColors.textSecondary,
                       ),
                     ),
                   ),
@@ -246,7 +279,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                       ),
                       child: Text(
                         '${_secondsRemaining.toString().padLeft(2, '0')}s',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: AppColors.secondary,
@@ -274,28 +307,28 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     elevation: 0,
                   ),
                   child: _isLoading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2.5,
-                        ),
-                      )
-                    : const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Confirmer mon compte',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
                           ),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward_rounded, size: 20),
-                        ],
-                      ),
+                        )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Confirmer mon compte',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.arrow_forward_rounded, size: 20),
+                          ],
+                        ),
                 ),
               ),
 
@@ -308,7 +341,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   Icon(
                     Icons.shield_outlined,
                     size: 13,
-                    color: AppColors.textSecondary.withOpacity(0.6),
+                    color: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.color
+                            ?.withValues(alpha: 0.6) ??
+                        AppColors.textSecondary.withOpacity(0.6),
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -316,7 +354,12 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     style: TextStyle(
                       fontSize: 10,
                       letterSpacing: 1.2,
-                      color: AppColors.textSecondary.withOpacity(0.6),
+                      color: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withValues(alpha: 0.6) ??
+                          AppColors.textSecondary.withOpacity(0.6),
                     ),
                   ),
                 ],

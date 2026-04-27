@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/network/auth_service.dart';
 
 export 'splash_screen.dart';
 
@@ -14,7 +15,8 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _logoController;
+  late AnimationController
+      _logoController; //contrôle la durée et le déroulement de l'animation.
   late AnimationController _textController;
   late AnimationController _dotsController;
 
@@ -78,6 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _startAnimations() async {
+    //attendre la fin d'une animation avant de passer à la suivante
     // Lance le logo
     await _logoController.forward();
 
@@ -92,10 +95,19 @@ class _SplashScreenState extends State<SplashScreen>
     // Anime les dots
     _animateDots();
 
-    // Navigue vers login après 3 secondes
+    // Navigue vers login ou home après 2 secondes
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) {
-      context.go(AppRoutes.login);
+      try {
+        final isLoggedIn = await AuthService.isLoggedIn();
+        if (isLoggedIn) {
+          context.go(AppRoutes.home);
+        } else {
+          context.go(AppRoutes.login);
+        }
+      } catch (e) {
+        context.go(AppRoutes.login);
+      }
     }
   }
 
@@ -119,7 +131,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF0F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -174,7 +186,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                       const SizedBox(height: 12),
                       // Slogan
-                      const Text(
+                      Text(
                         'Ton bébé dort, tu souffles.',
                         style: TextStyle(
                           fontSize: 16,
@@ -223,16 +235,26 @@ class _SplashScreenState extends State<SplashScreen>
                         Icon(
                           Icons.shield_outlined,
                           size: 14,
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color
+                                  ?.withValues(alpha: 0.6) ??
+                              AppColors.textSecondary,
                         ),
                         const SizedBox(width: 6),
-                        const Text(
+                        Text(
                           'MONITORING SÉCURISÉ',
                           style: TextStyle(
                             fontSize: 11,
                             letterSpacing: 1.5,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color
+                                    ?.withValues(alpha: 0.6) ??
+                                AppColors.textSecondary,
                             fontFamily: 'Poppins',
                           ),
                         ),

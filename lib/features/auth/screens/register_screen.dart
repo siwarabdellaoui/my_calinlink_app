@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/router/app_router.dart';
+import '../../../core/network/auth_service.dart';
 
 export 'register_screen.dart';
 
@@ -14,15 +15,15 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _firstNameController = TextEditingController();
-  final _lastNameController  = TextEditingController();
-  final _emailController     = TextEditingController();
-  final _passwordController  = TextEditingController();
-  final _confirmController   = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
 
   bool _obscurePassword = true;
-  bool _obscureConfirm  = true;
-  bool _acceptTerms     = false;
-  bool _isLoading       = false;
+  bool _obscureConfirm = true;
+  bool _acceptTerms = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -34,11 +35,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  bool isValidPassword(String password) {
+    final hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    final hasNumber = password.contains(RegExp(r'[0-9]'));
+    final hasMinLength = password.length >= 8;
+
+    return hasUppercase && hasNumber && hasMinLength;
+  }
+
   void _register() async {
     if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
+          content: Text(
             "Veuillez accepter les conditions d'utilisation",
           ),
           backgroundColor: AppColors.error,
@@ -50,11 +59,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       return;
     }
-
-    if (_passwordController.text != _confirmController.text) {
+    if (!isValidPassword(_passwordController.text.trim())) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Les mots de passe ne correspondent pas'),
+          content: Text(
+              'Le mot de passe doit contenir une majuscule, un chiffre et au moins 6 caractères'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (_passwordController.text.trim() != _confirmController.text.trim()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:  Text('Les mots de passe ne correspondent pas'),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -66,17 +89,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      setState(() => _isLoading = false);
-      context.go(AppRoutes.verifyEmail);
+
+    try {
+      await AuthService.register(
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+        // On redirige vers l'accueil après l'inscription (car l'utilisateur est maintenant connecté)
+        context.go(AppRoutes.home);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Erreur: impossible de s\'inscrire. Vérifiez vos données.'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF0F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -102,22 +146,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 20),
 
               // Titre
-              const Text(
+               Text(
                 'CâlinLink',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: Theme.of(context).textTheme.bodyMedium?.color ??
+                      AppColors.textPrimary,
                 ),
               ),
 
               const SizedBox(height: 6),
 
-              const Text(
+              Text(
                 'Créez votre espace de douceur',
                 style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.color
+                          ?.withValues(alpha: 0.6) ??
+                      AppColors.textSecondary,
                 ),
               ),
 
@@ -140,7 +190,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     // Prénom + Nom
                     Row(
                       children: [
@@ -148,12 +197,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'PRÉNOM',
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
+                                  color: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.color ??
+                                      AppColors.textPrimary,
                                   letterSpacing: 1,
                                 ),
                               ),
@@ -170,12 +223,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'NOM',
                                 style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
+                                  color: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.color ??
+                                      AppColors.textPrimary,
                                   letterSpacing: 1,
                                 ),
                               ),
@@ -193,12 +250,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20),
 
                     // Email
-                    const Text(
+                    Text(
                       'EMAIL',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).textTheme.bodyMedium?.color ??
+                            AppColors.textPrimary,
                         letterSpacing: 1,
                       ),
                     ),
@@ -212,12 +270,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20),
 
                     // Mot de passe
-                    const Text(
+                    Text(
                       'MOT DE PASSE',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).textTheme.bodyMedium?.color ??
+                            AppColors.textPrimary,
                         letterSpacing: 1,
                       ),
                     ),
@@ -232,9 +291,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           child: Icon(
                             _obscurePassword
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                            color: AppColors.textSecondary,
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color
+                                    ?.withValues(alpha: 0.6) ??
+                                AppColors.textSecondary,
                             size: 20,
                           ),
                         ),
@@ -244,12 +308,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 20),
 
                     // Confirmer mot de passe
-                    const Text(
+                    Text(
                       'CONFIRMER LE MOT DE PASSE',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: Theme.of(context).textTheme.bodyMedium?.color ??
+                            AppColors.textPrimary,
                         letterSpacing: 1,
                       ),
                     ),
@@ -264,9 +329,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           child: Icon(
                             _obscureConfirm
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                            color: AppColors.textSecondary,
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            color: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.color
+                                    ?.withValues(alpha: 0.6) ??
+                                AppColors.textSecondary,
                             size: 20,
                           ),
                         ),
@@ -288,32 +358,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             height: 22,
                             decoration: BoxDecoration(
                               color: _acceptTerms
-                                ? AppColors.primary
-                                : Colors.transparent,
+                                  ? AppColors.primary
+                                  : Colors.transparent,
                               border: Border.all(
                                 color: _acceptTerms
-                                  ? AppColors.primary
-                                  : AppColors.textSecondary,
+                                    ? AppColors.primary
+                                    : AppColors.textSecondary,
                                 width: 1.5,
                               ),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: _acceptTerms
-                              ? const Icon(
-                                  Icons.check_rounded,
-                                  color: Colors.white,
-                                  size: 14,
-                                )
-                              : null,
+                                ? const Icon(
+                                    Icons.check_rounded,
+                                    color: Colors.white,
+                                    size: 14,
+                                  )
+                                : null,
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: RichText(
                             text: TextSpan(
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
-                                color: AppColors.textSecondary,
+                                color: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.color
+                                        ?.withValues(alpha: 0.6) ??
+                                    AppColors.textSecondary,
                               ),
                               children: [
                                 const TextSpan(
@@ -322,7 +397,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 WidgetSpan(
                                   child: GestureDetector(
                                     onTap: () {},
-                                    child: const Text(
+                                    child: Text(
                                       "Conditions d'utilisation",
                                       style: TextStyle(
                                         fontSize: 13,
@@ -371,21 +446,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           elevation: 0,
                         ),
                         child: _isLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5,
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : Text(
+                                'Créer mon compte',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            )
-                          : const Text(
-                              'Créer mon compte',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
                       ),
                     ),
                   ],
@@ -398,16 +473,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                   Text(
                     'Déjà un compte ? ',
                     style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withValues(alpha: 0.6) ??
+                          AppColors.textSecondary,
                     ),
                   ),
                   GestureDetector(
                     onTap: () => context.go(AppRoutes.login),
-                    child: const Text(
+                    child: Text(
                       'Se connecter',
                       style: TextStyle(
                         fontSize: 14,
@@ -430,12 +510,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(
-        color: AppColors.textSecondary,
+      hintStyle: TextStyle(
+        color: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.color
+                ?.withValues(alpha: 0.6) ??
+            AppColors.textSecondary,
         fontSize: 14,
       ),
       filled: true,
-      fillColor: const Color(0xFFF8E8F0),
+      fillColor: Theme.of(context).colorScheme.surface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,

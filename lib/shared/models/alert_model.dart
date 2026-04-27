@@ -1,4 +1,5 @@
 enum AlertType { temperature, movement, presence, wakeUp }
+
 enum AlertSeverity { info, warning, critical }
 
 class AlertModel {

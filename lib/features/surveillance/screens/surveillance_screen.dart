@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
-
+import 'package:go_router/go_router.dart';
+import '../../../core/router/app_router.dart';
 export 'surveillance_screen.dart';
 
 class SurveillanceScreen extends StatefulWidget {
@@ -63,7 +64,7 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF0F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -171,17 +172,20 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
   Widget _buildHeader() {
     return Row(
       children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.15),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.person_rounded,
-            color: AppColors.primary,
-            size: 22,
+        GestureDetector(
+          onTap: () => context.push(AppRoutes.profile),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.person_rounded,
+              color: AppColors.primary,
+              size: 22,
+            ),
           ),
         ),
         const SizedBox(width: 10),
@@ -229,7 +233,7 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: AppColors.primary.withOpacity(0.15),
@@ -304,8 +308,8 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
                   height: active ? 20 : 14,
                   decoration: BoxDecoration(
                     color: active
-                      ? AppColors.primary
-                      : AppColors.primary.withOpacity(0.2),
+                        ? AppColors.primary
+                        : AppColors.primary.withOpacity(0.2),
                     shape: BoxShape.circle,
                   ),
                 ),
