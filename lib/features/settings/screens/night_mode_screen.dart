@@ -250,12 +250,12 @@ class NightModeScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: isSelected
                     ? AppColors.primary.withValues(alpha: 0.1)
-                    : AppColors.textSecondary.withValues(alpha: 0.1),
+                    : context.textSecondary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                color: isSelected ? AppColors.primary : context.textSecondary,
               ),
             ),
             const SizedBox(width: 16),
@@ -292,3 +292,4 @@ class NightModeScreen extends ConsumerWidget {
     );
   }
 }
+

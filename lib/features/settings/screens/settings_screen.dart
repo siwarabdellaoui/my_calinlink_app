@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
@@ -11,6 +12,11 @@ export 'settings_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
+
+  String _capitalize(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1).toLowerCase();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,7 +77,7 @@ class SettingsScreen extends ConsumerWidget {
                           .bodyMedium
                           ?.color
                           ?.withValues(alpha: 0.6) ??
-                      AppColors.textSecondary,
+                      context.textSecondary,
                 ),
               ),
             ),
@@ -96,21 +102,33 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    // Avatar Placeholder
+                    // Avatar
                     Container(
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                              'https://i.pravatar.cc/150?img=47'), // Using a generic avatar placeholder
-                          fit: BoxFit.cover,
-                        ),
+                        image: userProfile.avatar.isNotEmpty && userProfile.avatar.contains(',')
+                            ? DecorationImage(
+                                image: MemoryImage(base64Decode(userProfile.avatar.split(',').last)),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
                       ),
                       child: Stack(
                         children: [
+                          if (userProfile.avatar.isEmpty)
+                            Center(
+                              child: Text(
+                                '${userProfile.firstName.isNotEmpty ? userProfile.firstName[0] : ''}${userProfile.lastName.isNotEmpty ? userProfile.lastName[0] : ''}'.toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ),
                           Positioned(
                             bottom: 0,
                             right: 0,
@@ -135,7 +153,7 @@ class SettingsScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${userProfile.firstName} ${userProfile.lastName}',
+                            '${_capitalize(userProfile.firstName)} ${_capitalize(userProfile.lastName)}',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -143,7 +161,7 @@ class SettingsScreen extends ConsumerWidget {
                                       .textTheme
                                       .bodyMedium
                                       ?.color ??
-                                  AppColors.textPrimary,
+                                  context.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -289,7 +307,7 @@ class SettingsScreen extends ConsumerWidget {
                             .bodyMedium
                             ?.color
                             ?.withValues(alpha: 0.6) ??
-                        AppColors.textSecondary),
+                        context.textSecondary),
               )
             ],
           ),
@@ -508,7 +526,7 @@ class _SettingsTile extends StatelessWidget {
                           .bodyMedium
                           ?.color
                           ?.withValues(alpha: 0.6) ??
-                      AppColors.textSecondary,
+                      context.textSecondary,
                   size: 20),
             ],
           ),
@@ -517,3 +535,4 @@ class _SettingsTile extends StatelessWidget {
     );
   }
 }
+

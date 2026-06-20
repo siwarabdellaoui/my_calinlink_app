@@ -168,7 +168,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
                   color: Theme.of(context).textTheme.bodyMedium?.color ??
-                      AppColors.textPrimary,
+                      context.textPrimary,
                 ),
               ),
 
@@ -184,7 +184,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                           .bodyMedium
                           ?.color
                           ?.withValues(alpha: 0.6) ??
-                      AppColors.textSecondary,
+                      context.textSecondary,
                   height: 1.6,
                 ),
               ),
@@ -209,7 +209,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
                         color: Theme.of(context).textTheme.bodyMedium?.color ??
-                            AppColors.textPrimary,
+                            context.textPrimary,
                       ),
                       decoration: InputDecoration(
                         counterText: '',
@@ -250,7 +250,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                               .bodyMedium
                               ?.color
                               ?.withValues(alpha: 0.6) ??
-                          AppColors.textSecondary,
+                          context.textSecondary,
                     ),
                   ),
                   GestureDetector(
@@ -262,7 +262,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                         fontWeight: FontWeight.w700,
                         color: _canResend
                             ? AppColors.secondary
-                            : AppColors.textSecondary,
+                            : context.textSecondary,
                       ),
                     ),
                   ),
@@ -346,7 +346,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                             .bodyMedium
                             ?.color
                             ?.withValues(alpha: 0.6) ??
-                        AppColors.textSecondary.withOpacity(0.6),
+                        context.textSecondary.withOpacity(0.6),
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -359,7 +359,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                               .bodyMedium
                               ?.color
                               ?.withValues(alpha: 0.6) ??
-                          AppColors.textSecondary.withOpacity(0.6),
+                          context.textSecondary.withOpacity(0.6),
                     ),
                   ),
                 ],
@@ -373,3 +373,4 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     );
   }
 }
+

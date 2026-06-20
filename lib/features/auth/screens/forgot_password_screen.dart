@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/network/auth_service.dart';
+import 'package:dio/dio.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -45,9 +46,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        String errorMessage = 'Erreur: Vérifiez l\'email ou votre connexion.';
+        
+        if (e is DioException) {
+          if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.connectionError) {
+            errorMessage = 'Erreur de connexion au serveur (Vérifiez votre réseau)';
+          } else if (e.response?.data != null && e.response?.data['message'] != null) {
+            errorMessage = e.response!.data['message'];
+          }
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erreur: Vérifiez l\'email ou votre connexion.'),
+          SnackBar(
+            content: Text(errorMessage),
             backgroundColor: AppColors.error,
           ),
         );

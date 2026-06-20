@@ -57,7 +57,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                         child: Icon(Icons.arrow_back_rounded,
                             color:
                                 Theme.of(context).textTheme.bodyMedium?.color ??
-                                    AppColors.textPrimary),
+                                    context.textPrimary),
                       ),
                       const SizedBox(width: 16),
                       Container(
@@ -113,7 +113,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                         fontSize: 32,
                         fontWeight: FontWeight.w800,
                         color: Theme.of(context).textTheme.bodyMedium?.color ??
-                            AppColors.textPrimary,
+                            context.textPrimary,
                         height: 1.1,
                       ),
                     ),
@@ -165,7 +165,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                                   .bodyMedium
                                   ?.color
                                   ?.withValues(alpha: 0.6) ??
-                              AppColors.textSecondary.withValues(alpha: 0.6),
+                              context.textSecondary.withValues(alpha: 0.6),
                           fontWeight: FontWeight.w600),
                     ),
 
@@ -186,7 +186,7 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
                                       .bodyMedium
                                       ?.color
                                       ?.withValues(alpha: 0.6) ??
-                                  AppColors.textSecondary,
+                                  context.textSecondary,
                               letterSpacing: 1),
                         ),
                       ),
@@ -266,3 +266,4 @@ class _AddDeviceScreenState extends State<AddDeviceScreen> {
     );
   }
 }
+

@@ -68,7 +68,7 @@ class AppTheme {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           hintStyle:
-              const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              TextStyle(color: AppColors.textSecondary, fontSize: 14),
         ),
       );
 
@@ -125,4 +125,12 @@ class AppTheme {
               const TextStyle(color: AppColors.darkTextSecondary, fontSize: 14),
         ),
       );
+}
+
+extension ThemeColors on BuildContext {
+  Color get textPrimary => Theme.of(this).brightness == Brightness.dark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+  Color get textSecondary => Theme.of(this).brightness == Brightness.dark ? AppColors.darkTextSecondary : AppColors.textSecondary;
+  Color get cardBg => Theme.of(this).brightness == Brightness.dark ? AppColors.darkCardBg : AppColors.cardBg;
+  Color get cardBorder => Theme.of(this).brightness == Brightness.dark ? AppColors.darkCardBorder : AppColors.cardBorder;
+  Color get customBackground => Theme.of(this).brightness == Brightness.dark ? AppColors.darkBackground : AppColors.background;
 }

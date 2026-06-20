@@ -41,21 +41,21 @@ class _ControlScreenState extends State<ControlScreen> {
               const SizedBox(height: 16),
               _buildHeader(context),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'Le Lit de\nBébé',
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                   height: 1.1,
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 "Contrôlez l'environnement de sommeil",
                 style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                 ),
               ),
               const SizedBox(height: 28),
@@ -90,7 +90,7 @@ class _ControlScreenState extends State<ControlScreen> {
               color: AppColors.primary.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.person_rounded,
               color: AppColors.primary,
               size: 22,
@@ -98,7 +98,7 @@ class _ControlScreenState extends State<ControlScreen> {
           ),
         ),
         const SizedBox(width: 10),
-        const Text(
+        Text(
           'CâlinLink',
           style: TextStyle(
             fontSize: 18,
@@ -122,7 +122,7 @@ class _ControlScreenState extends State<ControlScreen> {
                 ),
               ],
             ),
-            child: const Icon(
+            child: Icon(
               Icons.notifications_rounded,
               color: AppColors.primary,
               size: 22,
@@ -136,10 +136,10 @@ class _ControlScreenState extends State<ControlScreen> {
   Widget _buildSectionLabel(String label) {
     return Text(
       label,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w700,
-        color: AppColors.textSecondary,
+        color: context.textSecondary,
         letterSpacing: 1.5,
       ),
     );
@@ -225,7 +225,7 @@ class _ControlScreenState extends State<ControlScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          const Text(
+           Text(
             'Mode Nuit',
             style: TextStyle(
               fontSize: 28,
@@ -234,7 +234,7 @@ class _ControlScreenState extends State<ControlScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+           Text(
             'Optimise la veilleuse et réduit\nles alertes pour un sommeil profond.',
             style: TextStyle(
               fontSize: 13,
@@ -298,14 +298,14 @@ class _ControlScreenState extends State<ControlScreen> {
                   color: Colors.amber.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.lightbulb_rounded,
                   color: Colors.amber,
                   size: 22,
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -314,14 +314,14 @@ class _ControlScreenState extends State<ControlScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                     Text(
                       'Lumière douce pour bébé',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                       ),
                     ),
                   ],
@@ -364,9 +364,9 @@ class _ControlScreenState extends State<ControlScreen> {
             const SizedBox(height: 20),
             Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.brightness_low_rounded,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                   size: 18,
                 ),
                 Expanded(
@@ -387,7 +387,7 @@ class _ControlScreenState extends State<ControlScreen> {
                     ),
                   ),
                 ),
-                const Icon(
+                 Icon(
                   Icons.brightness_high_rounded,
                   color: AppColors.primary,
                   size: 18,
@@ -397,10 +397,10 @@ class _ControlScreenState extends State<ControlScreen> {
             Center(
               child: Text(
                 '${(_nightLightIntensity * 100).round()}%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                 ),
               ),
             ),
@@ -439,14 +439,15 @@ class _ControlScreenState extends State<ControlScreen> {
                   color: AppColors.secondary.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.music_note_rounded,
                   color: AppColors.secondary,
                   size: 22,
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              
+               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -455,14 +456,14 @@ class _ControlScreenState extends State<ControlScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                     Text(
                       'Musique douce pour endormir',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                       ),
                     ),
                   ],
@@ -529,7 +530,7 @@ class _ControlScreenState extends State<ControlScreen> {
                             : Icons.music_note_outlined,
                         color: isSelected
                             ? AppColors.primary
-                            : AppColors.textSecondary,
+                            : context.textSecondary,
                         size: 18,
                       ),
                       const SizedBox(width: 12),
@@ -543,12 +544,12 @@ class _ControlScreenState extends State<ControlScreen> {
                                 : FontWeight.normal,
                             color: isSelected
                                 ? AppColors.primary
-                                : AppColors.textPrimary,
+                                : context.textPrimary,
                           ),
                         ),
                       ),
                       if (isSelected)
-                        const Icon(
+                         Icon(
                           Icons.check_circle_rounded,
                           color: AppColors.primary,
                           size: 18,
@@ -561,9 +562,9 @@ class _ControlScreenState extends State<ControlScreen> {
             const SizedBox(height: 16),
             Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.volume_down_rounded,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                   size: 18,
                 ),
                 Expanded(
@@ -583,7 +584,7 @@ class _ControlScreenState extends State<ControlScreen> {
                     ),
                   ),
                 ),
-                const Icon(
+                 Icon(
                   Icons.volume_up_rounded,
                   color: AppColors.secondary,
                   size: 18,
@@ -593,10 +594,10 @@ class _ControlScreenState extends State<ControlScreen> {
             Center(
               child: Text(
                 'Volume : ${(_musicVolume * 100).round()}%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                 ),
               ),
             ),
@@ -625,14 +626,14 @@ class _ControlScreenState extends State<ControlScreen> {
               color: AppColors.success,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child:  Icon(
               Icons.check_rounded,
               color: Colors.white,
               size: 18,
             ),
           ),
           const SizedBox(width: 14),
-          const Text(
+           Text(
             'Action envoyée au lit',
             style: TextStyle(
               fontSize: 15,
@@ -669,3 +670,4 @@ class _ControlScreenState extends State<ControlScreen> {
     }
   }
 }
+

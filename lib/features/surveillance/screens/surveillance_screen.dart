@@ -81,13 +81,13 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
               // Titre + statut
               Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Surveillance\nen direct',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                         height: 1.2,
                       ),
                     ),
@@ -113,7 +113,7 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        const Text(
+                        Text (
                           'ACTIF',
                           style: TextStyle(
                             fontSize: 11,
@@ -130,7 +130,7 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
 
               const SizedBox(height: 8),
 
-              const Text(
+               Text(
                 'SYSTÈME ACTIF',
                 style: TextStyle(
                   fontSize: 11,
@@ -189,7 +189,7 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
           ),
         ),
         const SizedBox(width: 10),
-        const Text(
+         Text(
           'CâlinLink',
           style: TextStyle(
             fontSize: 18,
@@ -213,9 +213,9 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
                 ),
               ],
             ),
-            child: const Icon(
+            child: Icon(
               Icons.refresh_rounded,
-              color: AppColors.textSecondary,
+              color: context.textSecondary,
               size: 20,
             ),
           ),
@@ -254,11 +254,11 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+               Text(
                 'Température',
                 style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -289,10 +289,10 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
           // Valeur
           Text(
             '${_temperature.toStringAsFixed(1)}°C',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
             ),
           ),
 
@@ -351,11 +351,11 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+               Text(
                 'Humidité',
                 style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -386,10 +386,10 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
           // Valeur
           Text(
             '${_humidity.toStringAsFixed(0)}%',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 36,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
             ),
           ),
 
@@ -409,14 +409,14 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
           const SizedBox(height: 8),
 
           // Labels SEC / HUMIDE
-          const Row(
+           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'SEC',
                 style: TextStyle(
                   fontSize: 10,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1,
                 ),
@@ -425,7 +425,7 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
                 'HUMIDE',
                 style: TextStyle(
                   fontSize: 10,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1,
                 ),
@@ -480,21 +480,21 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Mouvements',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   _movement,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
               ],
@@ -542,7 +542,7 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
       child: Row(
         children: [
           // Infos
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -550,7 +550,7 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
                   'Présence',
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -560,7 +560,7 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
               ],
@@ -586,3 +586,4 @@ class _SurveillanceScreenState extends State<SurveillanceScreen> {
     );
   }
 }
+

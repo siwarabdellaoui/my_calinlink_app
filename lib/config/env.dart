@@ -6,7 +6,7 @@ class Env {
   static String get apiUrl {
     // Basic platform check
     if (Platform.isAndroid) {
-      return 'http://192.168.1.15:5000/api';
+      return 'http://192.168.1.17:5000/api';
     } else {
       return 'http://127.0.0.1:5000/api';
     }

@@ -125,7 +125,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
                   color: Theme.of(context).textTheme.bodyMedium?.color ??
-                      AppColors.textPrimary,
+                      context.textPrimary,
                 ),
               ),
               const SizedBox(height: 12),
@@ -138,7 +138,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           .bodyMedium
                           ?.color
                           ?.withValues(alpha: 0.6) ??
-                      AppColors.textSecondary,
+                      context.textSecondary,
                   height: 1.5,
                 ),
               ),
@@ -152,7 +152,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).textTheme.bodyMedium?.color ??
-                      AppColors.textPrimary,
+                      context.textPrimary,
                   letterSpacing: 1,
                 ),
               ),
@@ -173,7 +173,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               .bodyMedium
                               ?.color
                               ?.withValues(alpha: 0.6) ??
-                          AppColors.textSecondary,
+                          context.textSecondary,
                       size: 20,
                     ),
                   ),
@@ -189,7 +189,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).textTheme.bodyMedium?.color ??
-                      AppColors.textPrimary,
+                      context.textPrimary,
                   letterSpacing: 1,
                 ),
               ),
@@ -210,7 +210,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               .bodyMedium
                               ?.color
                               ?.withValues(alpha: 0.6) ??
-                          AppColors.textSecondary,
+                          context.textSecondary,
                       size: 20,
                     ),
                   ),
@@ -267,7 +267,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 .bodyMedium
                 ?.color
                 ?.withValues(alpha: 0.6) ??
-            AppColors.textSecondary,
+            context.textSecondary,
         fontSize: 14,
       ),
       filled: true,
@@ -290,3 +290,4 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 }
+

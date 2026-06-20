@@ -336,10 +336,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                 ),
                 if (!_isFullscreen) ...[
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'CAPTURE',
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondary,
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 1,
@@ -361,7 +361,7 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                   ),
                   child: Icon(
                     _isMicOn ? Icons.mic_none_rounded : Icons.mic_off_rounded,
-                    color: _isMicOn ? AppColors.textPrimary : Colors.white,
+                    color: _isMicOn ? context.textPrimary : Colors.white,
                     size: 32,
                   ),
                 ),
@@ -400,10 +400,10 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                 ),
                 if (!_isFullscreen) ...[
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'PLEIN ÉCRAN',
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondary,
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 1,
@@ -484,9 +484,9 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
                     const SizedBox(height: 4),
                     Text(
                       '$displayName$babyAgeStr',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -658,3 +658,4 @@ class _CameraScreenState extends ConsumerState<CameraScreen> {
     );
   }
 }
+

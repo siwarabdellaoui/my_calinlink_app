@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
@@ -61,6 +62,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  String _capitalize(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1).toLowerCase();
+  }
+
   // Header avec avatar et notification
   Widget _buildHeader(BuildContext context) {
     final userProfile = ref.watch(userProfileProvider);
@@ -74,12 +80,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           decoration: BoxDecoration(
             color: AppColors.primary.withOpacity(0.2),
             shape: BoxShape.circle,
+            image: userProfile.avatar.isNotEmpty && userProfile.avatar.contains(',')
+                ? DecorationImage(
+                    image: MemoryImage(base64Decode(userProfile.avatar.split(',').last)),
+                    fit: BoxFit.cover,
+                  )
+                : null,
           ),
-          child: const Icon(
-            Icons.person_rounded,
-            color: AppColors.primary,
-            size: 26,
-          ),
+          child: userProfile.avatar.isEmpty
+              ? Center(
+                  child: Text(
+                    '${userProfile.firstName.isNotEmpty ? userProfile.firstName[0] : ''}${userProfile.lastName.isNotEmpty ? userProfile.lastName[0] : ''}'.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                )
+              : null,
         ),
         const SizedBox(width: 12),
 
@@ -87,12 +106,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Expanded(
           child: Text(
             userProfile.firstName.isNotEmpty
-                ? 'Bonjour, ${userProfile.firstName}'
+                ? 'Bonjour, ${_capitalize(userProfile.firstName)}'
                 : 'Bonjour',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
             ),
           ),
         ),
@@ -187,12 +206,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'CâlinLink —\nLit de Léa',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                     height: 1.2,
                   ),
                 ),
@@ -328,10 +347,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(height: 8),
                 Text(
                   s.$2,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                   ),
                 ),
               ],
@@ -413,10 +432,10 @@ class _MetricCard extends StatelessWidget {
             // Valeur
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: context.textPrimary,
                 height: 1.2,
               ),
             ),
@@ -426,9 +445,9 @@ class _MetricCard extends StatelessWidget {
             // Label
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: AppColors.textSecondary,
+                color: context.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -438,3 +457,4 @@ class _MetricCard extends StatelessWidget {
     );
   }
 }
+

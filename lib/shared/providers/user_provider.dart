@@ -68,7 +68,6 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
   }
 
   Future<void> updateProfile(UserProfile newProfile) async {
-    state = newProfile;
     try {
       await UserService.updateProfile({
         'firstName': newProfile.firstName,
@@ -81,8 +80,10 @@ class UserProfileNotifier extends StateNotifier<UserProfile> {
           'birthDate': newProfile.babyBirthDate,
         }
       });
+      state = newProfile;
     } catch (e) {
       print('Erreur updateProfile: $e');
+      rethrow;
     }
   }
 }

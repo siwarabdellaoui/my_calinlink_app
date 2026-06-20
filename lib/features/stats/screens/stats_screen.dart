@@ -38,11 +38,11 @@ class _StatsScreenState extends State<StatsScreen> {
                           shape: BoxShape.circle,
                           color: AppColors.primary.withValues(alpha: 0.2),
                         ),
-                        child: const Icon(Icons.person_rounded,
+                        child: Icon(Icons.person_rounded,
                             color: AppColors.primary, size: 24),
                       ),
                       const SizedBox(width: 12),
-                      const Text(
+                      Text(
                         'CâlinLink',
                         style: TextStyle(
                           fontSize: 18,
@@ -54,7 +54,7 @@ class _StatsScreenState extends State<StatsScreen> {
                   ),
                   GestureDetector(
                     onTap: () => context.push(AppRoutes.alerts),
-                    child: const Icon(
+                    child: Icon(
                       Icons.notifications_active_rounded,
                       color: AppColors.primary,
                     ),
@@ -64,12 +64,12 @@ class _StatsScreenState extends State<StatsScreen> {
 
               const SizedBox(height: 24),
 
-              const Text(
+              Text(
                 'Statistiques du sommeil',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                   height: 1.1,
                 ),
               ),
@@ -95,12 +95,12 @@ class _StatsScreenState extends State<StatsScreen> {
               const SizedBox(height: 32),
 
               // Sleep Cycles
-              const Text(
+               Text(
                 'Cycles de sommeil',
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary),
+                    color: context.textPrimary),
               ),
               const SizedBox(height: 16),
               _buildSleepCyclesChart(),
@@ -108,12 +108,12 @@ class _StatsScreenState extends State<StatsScreen> {
               const SizedBox(height: 32),
 
               // Temperature Evolution
-              const Text(
+               Text(
                 'Évolution Température',
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary),
+                    color: context.textPrimary),
               ),
               const SizedBox(height: 16),
               _buildTemperatureChart(),
@@ -125,8 +125,8 @@ class _StatsScreenState extends State<StatsScreen> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.download_rounded),
-                  label: const Text('Télécharger le rapport PDF'),
+                  icon: Icon(Icons.download_rounded),
+                  label:  Text('Télécharger le rapport PDF'),
                 ),
               ),
 
@@ -160,7 +160,7 @@ class _StatsScreenState extends State<StatsScreen> {
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.white : AppColors.textSecondary,
+              color: isSelected ? Colors.white : context.textSecondary,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
               fontSize: 13,
             ),
@@ -192,19 +192,19 @@ class _StatsScreenState extends State<StatsScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'DURÉE MOY. DU SOMMEIL',
                     style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                         letterSpacing: 1),
                   ),
                   const SizedBox(height: 4),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text(
+                      Text(
                         '7h20',
                         style: TextStyle(
                             fontSize: 36,
@@ -221,7 +221,7 @@ class _StatsScreenState extends State<StatsScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.arrow_upward_rounded,
+                            Icon(Icons.arrow_upward_rounded,
                                 color: AppColors.success, size: 12),
                             const SizedBox(width: 4),
                             Text(
@@ -263,7 +263,7 @@ class _StatsScreenState extends State<StatsScreen> {
                         ),
                       ),
                     ),
-                    const Center(
+                     Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -271,12 +271,12 @@ class _StatsScreenState extends State<StatsScreen> {
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.textPrimary)),
+                                  color: context.textPrimary)),
                           Text('Profond',
                               style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.textSecondary)),
+                                  color: context.textSecondary)),
                         ],
                       ),
                     )
@@ -318,13 +318,13 @@ class _StatsScreenState extends State<StatsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(value,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary)),
+                    color: context.textPrimary)),
             Text(label,
-                style: const TextStyle(
-                    fontSize: 10, color: AppColors.textSecondary, height: 1.1)),
+                style: TextStyle(
+                    fontSize: 10, color: context.textSecondary, height: 1.1)),
           ],
         ),
       ],
@@ -369,8 +369,8 @@ class _StatsScreenState extends State<StatsScreen> {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
                       titles[value.toInt()],
-                      style: const TextStyle(
-                          color: AppColors.textSecondary,
+                      style: TextStyle(
+                          color: context.textSecondary,
                           fontWeight: FontWeight.w600,
                           fontSize: 10),
                     ),
@@ -459,8 +459,8 @@ class _StatsScreenState extends State<StatsScreen> {
                 interval: 4,
                 getTitlesWidget: (value, meta) {
                   return Text('${value.toInt()}:00',
-                      style: const TextStyle(
-                          color: AppColors.textSecondary,
+                      style: TextStyle(
+                          color: context.textSecondary,
                           fontSize: 10,
                           fontWeight: FontWeight.w600));
                 },
@@ -499,3 +499,4 @@ class _StatsScreenState extends State<StatsScreen> {
     );
   }
 }
+

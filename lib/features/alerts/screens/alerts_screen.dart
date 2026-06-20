@@ -61,11 +61,11 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
                           shape: BoxShape.circle,
                           color: AppColors.primary.withValues(alpha: 0.2),
                         ),
-                        child: const Icon(Icons.person_rounded,
+                        child: Icon(Icons.person_rounded,
                             color: AppColors.primary, size: 24),
                       ),
                       const SizedBox(width: 12),
-                      const Text(
+                       Text(
                         'CâlinLink',
                         style: TextStyle(
                           fontSize: 18,
@@ -75,7 +75,7 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
                       ),
                     ],
                   ),
-                  const Icon(Icons.notifications_active_rounded,
+                 Icon(Icons.notifications_active_rounded,
                       color: AppColors.primary),
                 ],
               ),
@@ -84,27 +84,28 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
             const SizedBox(height: 24),
 
             // Page Title
-            const Padding(
+            
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 'Alertes',
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                   height: 1.1,
                 ),
               ),
             ),
             const SizedBox(height: 4),
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 'Dernières activités de bébé',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                 ),
               ),
             ),
@@ -142,7 +143,7 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
                         style: TextStyle(
                           color: isSelected
                               ? Colors.white
-                              : AppColors.textSecondary,
+                              : context.textSecondary,
                           fontWeight:
                               isSelected ? FontWeight.w700 : FontWeight.w600,
                           fontSize: 13,
@@ -159,10 +160,10 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
             // Alerts List
             Expanded(
               child: filteredAlerts.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
                         'Aucune alerte pour l\'instant.',
-                        style: TextStyle(color: AppColors.textSecondary),
+                        style: TextStyle(color: context.textSecondary),
                       ),
                     )
                   : ListView.builder(
@@ -288,10 +289,10 @@ class _AlertCard extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 title,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
+                                  color: context.textPrimary,
                                 ),
                               ),
                             ),
@@ -312,7 +313,7 @@ class _AlertCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 13,
                             color:
-                                AppColors.textSecondary.withValues(alpha: 0.8),
+                                context.textSecondary.withValues(alpha: 0.8),
                             height: 1.4,
                           ),
                         ),
@@ -328,3 +329,4 @@ class _AlertCard extends StatelessWidget {
     );
   }
 }
+

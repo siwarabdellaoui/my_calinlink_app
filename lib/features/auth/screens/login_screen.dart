@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:dio/dio.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/network/auth_service.dart';
@@ -46,9 +47,21 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        String errorMessage = 'Erreur: Email ou mot de passe incorrect';
+        
+        if (e is DioException) {
+          if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.connectionError) {
+            errorMessage = 'Erreur de connexion au serveur (Vérifiez votre réseau)';
+          } else if (e.response?.data != null && e.response?.data['message'] != null) {
+            errorMessage = e.response!.data['message'];
+          }
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Erreur: Email ou mot de passe incorrect')),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     }
@@ -89,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
                   color: Theme.of(context).textTheme.bodyMedium?.color ??
-                      AppColors.textPrimary,
+                      context.textPrimary,
                 ),
               ),
 
@@ -105,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           .bodyMedium
                           ?.color
                           ?.withValues(alpha: 0.6) ??
-                      AppColors.textSecondary,
+                      context.textSecondary,
                 ),
               ),
 
@@ -135,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: Theme.of(context).textTheme.bodyMedium?.color ??
-                            AppColors.textPrimary,
+                            context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -151,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   .bodyMedium
                                   ?.color
                                   ?.withValues(alpha: 0.6) ??
-                              AppColors.textSecondary,
+                              context.textSecondary,
                           size: 20,
                         ),
                         filled: true,
@@ -179,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: Theme.of(context).textTheme.bodyMedium?.color ??
-                            AppColors.textPrimary,
+                            context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -195,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   .bodyMedium
                                   ?.color
                                   ?.withValues(alpha: 0.6) ??
-                              AppColors.textSecondary,
+                              context.textSecondary,
                           size: 20,
                         ),
                         suffixIcon: GestureDetector(
@@ -211,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     .bodyMedium
                                     ?.color
                                     ?.withValues(alpha: 0.6) ??
-                                AppColors.textSecondary,
+                                context.textSecondary,
                             size: 20,
                           ),
                         ),
@@ -296,7 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     .bodyMedium
                                     ?.color
                                     ?.withValues(alpha: 0.6) ??
-                                AppColors.textSecondary.withOpacity(0.3),
+                                context.textSecondary.withOpacity(0.3),
                           ),
                         ),
                         Padding(
@@ -310,7 +323,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       .bodyMedium
                                       ?.color
                                       ?.withValues(alpha: 0.6) ??
-                                  AppColors.textSecondary.withOpacity(0.6),
+                                  context.textSecondary.withOpacity(0.6),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -322,7 +335,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     .bodyMedium
                                     ?.color
                                     ?.withValues(alpha: 0.6) ??
-                                AppColors.textSecondary.withOpacity(0.3),
+                                context.textSecondary.withOpacity(0.3),
                           ),
                         ),
                       ],
@@ -381,7 +394,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               .bodyMedium
                               ?.color
                               ?.withValues(alpha: 0.6) ??
-                          AppColors.textSecondary,
+                          context.textSecondary,
                     ),
                   ),
                   GestureDetector(
@@ -412,7 +425,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             .bodyMedium
                             ?.color
                             ?.withValues(alpha: 0.6) ??
-                        AppColors.textSecondary,
+                        context.textSecondary,
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -425,7 +438,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               .bodyMedium
                               ?.color
                               ?.withValues(alpha: 0.6) ??
-                          AppColors.textSecondary,
+                          context.textSecondary,
                     ),
                   ),
                   const SizedBox(width: 24),
@@ -439,7 +452,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               .bodyMedium
                               ?.color
                               ?.withValues(alpha: 0.6) ??
-                          AppColors.textSecondary,
+                          context.textSecondary,
                     ),
                   ),
                 ],
@@ -475,7 +488,7 @@ class _SocialButton extends StatelessWidget {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppColors.cardBorder,
+            color: context.cardBorder,
             width: 1.5,
           ),
         ),
@@ -485,7 +498,7 @@ class _SocialButton extends StatelessWidget {
             Icon(icon,
                 size: 22,
                 color: Theme.of(context).textTheme.bodyMedium?.color ??
-                    AppColors.textPrimary),
+                    context.textPrimary),
             const SizedBox(width: 8),
             Text(
               label,
@@ -493,7 +506,7 @@ class _SocialButton extends StatelessWidget {
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).textTheme.bodyMedium?.color ??
-                    AppColors.textPrimary,
+                    context.textPrimary,
               ),
             ),
           ],
@@ -502,3 +515,4 @@ class _SocialButton extends StatelessWidget {
     );
   }
 }
+

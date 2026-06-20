@@ -94,23 +94,23 @@ class _SharingScreenState extends State<SharingScreen> {
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_back_rounded,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                   ),
 
                   const SizedBox(width: 12),
 
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Text(
                         'Partager l\'accès',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimary,
                         ),
                       ),
                     ),
@@ -145,12 +145,12 @@ class _SharingScreenState extends State<SharingScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    const Text(
+                    Text(
                       'Prenez soin de bébé ensemble',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                         height: 1.2,
                       ),
                     ),
@@ -159,17 +159,17 @@ class _SharingScreenState extends State<SharingScreen> {
                       'Autorisez vos proches à surveiller bébé, contrôler la musique et recevoir des alertes en temps réel.',
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.textSecondary.withValues(alpha: 0.8),
+                        color: context.textSecondary.withValues(alpha: 0.8),
                         height: 1.4,
                       ),
                     ),
                     const SizedBox(height: 32),
-                    const Text(
+                    Text(
                       'EMAIL DU NOUVEAU PARENT',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                         letterSpacing: 1,
                       ),
                     ),
@@ -179,9 +179,9 @@ class _SharingScreenState extends State<SharingScreen> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         hintText: 'exemple@parent.com',
-                        suffixIcon: const Icon(
+                        suffixIcon: Icon(
                           Icons.mail_outline_rounded,
-                          color: AppColors.textSecondary,
+                          color: context.textSecondary,
                         ),
                         filled: true,
                         fillColor: Colors.white,
@@ -209,19 +209,19 @@ class _SharingScreenState extends State<SharingScreen> {
                                 height: 20,
                                 child: CircularProgressIndicator(
                                     color: Colors.white, strokeWidth: 2))
-                            : const Text("Envoyer l'invitation"),
+                            : Text("Envoyer l'invitation"),
                       ),
                     ),
                     const SizedBox(height: 48),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Accès partagés actifs',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.textPrimary,
+                            color: context.textPrimary,
                           ),
                         ),
                         Container(
@@ -231,7 +231,7 @@ class _SharingScreenState extends State<SharingScreen> {
                             color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Text(
+                          child: Text(
                             '1 ACTIF',
                             style: TextStyle(
                               color: AppColors.primary,
@@ -254,3 +254,4 @@ class _SharingScreenState extends State<SharingScreen> {
     );
   }
 }
+

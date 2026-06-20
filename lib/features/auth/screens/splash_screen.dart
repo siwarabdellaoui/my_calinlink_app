@@ -240,7 +240,7 @@ class _SplashScreenState extends State<SplashScreen>
                                   .bodyMedium
                                   ?.color
                                   ?.withValues(alpha: 0.6) ??
-                              AppColors.textSecondary,
+                              context.textSecondary,
                         ),
                         const SizedBox(width: 6),
                         Text(
@@ -254,7 +254,7 @@ class _SplashScreenState extends State<SplashScreen>
                                     .bodyMedium
                                     ?.color
                                     ?.withValues(alpha: 0.6) ??
-                                AppColors.textSecondary,
+                                context.textSecondary,
                             fontFamily: 'Poppins',
                           ),
                         ),
@@ -291,7 +291,7 @@ class _SplashScreenState extends State<SplashScreen>
             Positioned(
               top: 55,
               left: 38,
-              child: _buildStar(AppColors.textSecondary, 13),
+              child: _buildStar(context.textSecondary, 13),
             ),
             Positioned(
               bottom: 45,
@@ -333,3 +333,4 @@ class _SplashScreenState extends State<SplashScreen>
     return Icon(Icons.star_rounded, color: color, size: size);
   }
 }
+

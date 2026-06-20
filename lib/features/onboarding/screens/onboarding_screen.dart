@@ -91,7 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               .bodyMedium
                               ?.color
                               ?.withValues(alpha: 0.6) ??
-                          AppColors.textSecondary,
+                          context.textSecondary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -300,7 +300,7 @@ class _OnboardingPage extends StatelessWidget {
                                           .bodyMedium
                                           ?.color
                                           ?.withValues(alpha: 0.6) ??
-                                      AppColors.textSecondary,
+                                      context.textSecondary,
                                   letterSpacing: 1,
                                 ),
                               ),
@@ -314,7 +314,7 @@ class _OnboardingPage extends StatelessWidget {
                                           .textTheme
                                           .bodyMedium
                                           ?.color ??
-                                      AppColors.textPrimary,
+                                      context.textPrimary,
                                 ),
                               ),
                             ],
@@ -356,7 +356,7 @@ class _OnboardingPage extends StatelessWidget {
                             .bodyMedium
                             ?.color
                             ?.withValues(alpha: 0.6) ??
-                        AppColors.textSecondary,
+                        context.textSecondary,
                     height: 1.6,
                   ),
                 ),
@@ -368,3 +368,4 @@ class _OnboardingPage extends StatelessWidget {
     );
   }
 }
+

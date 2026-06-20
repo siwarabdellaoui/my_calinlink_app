@@ -33,7 +33,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _lastNameController = TextEditingController();
     _phoneController = TextEditingController();
     _babyNameController = TextEditingController();
-    _babyNameController = TextEditingController();
     _babyDobController = TextEditingController(text: '04/10/2024');
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -113,7 +112,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.photo_library),
-                  title: const Text('Galerie'),
+                  title:  Text('Galerie'),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImage(ImageSource.gallery);
@@ -121,7 +120,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 ListTile(
                   leading: const Icon(Icons.camera_alt),
-                  title: const Text('Appareil photo'),
+                  title: Text('Appareil photo'),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImage(ImageSource.camera);
@@ -164,14 +163,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Text(
                         'Mon profil',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimary,
                         ),
                       ),
                     ),
@@ -246,12 +245,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       'Modifier la photo',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -285,12 +284,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'Mon bébé',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.textPrimary,
+                            color: context.textPrimary,
                           ),
                         ),
                       ],
@@ -317,9 +316,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           _babyDobController.text = formattedDate;
                         }
                       },
-                      suffixIcon: const Icon(
+                      suffixIcon: Icon(
                         Icons.calendar_month_rounded,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -342,7 +341,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           // Format simple envoi de date 'yyyy-MM-dd' pour que MongoDB le parse bien
                           String formattedDate = _babyDobController.text;
                           if (formattedDate.contains('/')) {
@@ -362,12 +361,27 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             avatar: _base64Image ?? '',
                             babyGender: _selectedGender == 1 ? 'M' : 'F',
                           );
-                          ref
-                              .read(userProfileProvider.notifier)
-                              .updateProfile(updatedProfile);
-                          context.pop();
+
+                          try {
+                            await ref
+                                .read(userProfileProvider.notifier)
+                                .updateProfile(updatedProfile);
+                            
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Profil mis à jour avec succès')),
+                              );
+                              context.pop();
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Erreur lors de la mise à jour du profil')),
+                              );
+                            }
+                          }
                         },
-                        child: const Text('Enregistrer les modifications'),
+                        child: Text('Enregistrer les modifications'),
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -388,10 +402,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         alignment: Alignment.centerLeft,
         child: Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w700,
-            color: AppColors.textSecondary,
+            color: context.textSecondary,
             letterSpacing: 1,
           ),
         ),
@@ -420,7 +434,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   .bodyMedium
                   ?.color
                   ?.withValues(alpha: 0.5) ??
-              AppColors.textSecondary,
+              context.textSecondary,
         ),
         suffixIcon: suffixIcon,
         filled: true,
@@ -445,7 +459,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
       style: TextStyle(
         color: Theme.of(context).textTheme.bodyMedium?.color ??
-            AppColors.textPrimary,
+            context.textPrimary,
       ),
     );
   }
@@ -477,7 +491,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.white : AppColors.textSecondary,
+              color: isSelected ? Colors.white : context.textSecondary,
               size: 20,
             ),
             const SizedBox(width: 8),
@@ -485,7 +499,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               label,
               style: TextStyle(
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                color: isSelected ? Colors.white : AppColors.textSecondary,
+                color: isSelected ? Colors.white : context.textSecondary,
                 fontSize: 14,
               ),
             ),
@@ -495,3 +509,4 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 }
+

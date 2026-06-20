@@ -111,7 +111,7 @@ class _CalinBottomNav extends StatelessWidget {
                               items[i].$1,
                               color: selected
                                   ? AppColors.primary
-                                  : AppColors.textSecondary,
+                                  : context.textSecondary,
                               size: 22,
                             ),
 
@@ -131,7 +131,7 @@ class _CalinBottomNav extends StatelessWidget {
                                 selected ? FontWeight.w600 : FontWeight.normal,
                             color: selected
                                 ? AppColors.primary
-                                : AppColors.textSecondary,
+                                : context.textSecondary,
                           ),
                         ),
                       ),
@@ -146,3 +146,4 @@ class _CalinBottomNav extends StatelessWidget {
     );
   }
 }
+

@@ -127,9 +127,13 @@ class GoogleAccountPickerScreen extends StatelessWidget {
                                 } catch (e) {
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Erreur de connexion Google')),
+                                      SnackBar(
+                                        content: Text(
+                                          'Configuration Google absente (SHA-1 / google-services.json requis).',
+                                        ),
+                                        backgroundColor: Colors.red,
+                                        duration: const Duration(seconds: 4),
+                                      ),
                                     );
                                   }
                                 }
