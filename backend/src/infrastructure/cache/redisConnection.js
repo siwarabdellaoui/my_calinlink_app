@@ -1,4 +1,4 @@
-// Configuration de la connexion Redis (si utilisé pour le cache)
+
 // const redis = require('redis');
 
 const connectRedis = async () => {
