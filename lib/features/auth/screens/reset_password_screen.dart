@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/network/auth_service.dart';
+import 'package:dio/dio.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   final String resetToken;
@@ -71,10 +72,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        String errorMessage = 'Erreur: impossible de modifier le mot de passe';
+        
+        if (e is DioException) {
+          if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.connectionError) {
+            errorMessage = 'Erreur de connexion au serveur (Vérifiez votre réseau)';
+          } else if (e.response?.data != null && e.response?.data['message'] != null) {
+            errorMessage = e.response!.data['message'];
+          }
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                 Text('Erreur: impossible de modifier le mot de passe'),
+            content: Text(errorMessage),
             backgroundColor: AppColors.error,
           ),
         );

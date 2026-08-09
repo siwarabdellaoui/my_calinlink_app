@@ -171,11 +171,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          hintText: 'maman@calinlink.fr',
-                          hintStyle: TextStyle(
-                            color: const Color(0xFFC7B8C2).withOpacity(0.9),
-                            fontWeight: FontWeight.w500,
-                          ),
                           filled: true,
                           fillColor: const Color(0xFFF6E7EF),
                           contentPadding: const EdgeInsets.symmetric(

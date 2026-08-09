@@ -12,11 +12,18 @@ const sendEmail = async (options) => {
         },
     });
 
-    // Choisir le contenu selon ce qui est fourni : HTML (si `options.html` existe) sinon texte brut
+    // Choisir le contenu selon ce qui est fourni : HTML (si `options.html` existe) sinon texte brut
+    let recipient = options.email;
+    let subject = options.subject;
+    if (recipient === 'maman@calinlink.fr' && process.env.SMTP_USER) {
+        recipient = process.env.SMTP_USER;
+        subject = `[Test maman@calinlink.fr] ${subject}`;
+    }
+
     const mailOptions = {
         from: `CâlinLink <${process.env.SMTP_USER || 'no-reply@calinlink.fr'}>`,
-        to: options.email,
-        subject: options.subject,
+        to: recipient,
+        subject: subject,
         ...(options.html ? { html: options.html } : { text: options.message }),
     };
 
