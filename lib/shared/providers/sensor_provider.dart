@@ -55,6 +55,14 @@ class SensorNotifier extends StateNotifier<SensorData> {
     });
   }
 
+  void updateData(SensorData newData) {
+    if (_timer != null) {
+      _timer!.cancel();
+      _timer = null;
+    }
+    state = newData;
+  }
+
   @override
   void dispose() {
     _timer?.cancel();

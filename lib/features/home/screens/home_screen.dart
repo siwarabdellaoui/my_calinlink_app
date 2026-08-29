@@ -80,9 +80,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           decoration: BoxDecoration(
             color: AppColors.primary.withOpacity(0.2),
             shape: BoxShape.circle,
-            image: userProfile.avatar.isNotEmpty && userProfile.avatar.contains(',')
+            image: userProfile.avatar.isNotEmpty
                 ? DecorationImage(
-                    image: MemoryImage(base64Decode(userProfile.avatar.split(',').last)),
+                    image: MemoryImage(base64Decode(
+                        userProfile.avatar.contains(',')
+                            ? userProfile.avatar.split(',').last
+                            : userProfile.avatar)),
                     fit: BoxFit.cover,
                   )
                 : null,
@@ -271,9 +274,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           icon: Icons.thermostat_rounded,
           iconColor: AppColors.warning,
           label: 'Température',
-          value: '${sensorData.temperature}°C',
-          badge: 'IDÉAL',
-          badgeColor: AppColors.success,
+          value: '${sensorData.temperature.toStringAsFixed(1)}°C',
+          badge: sensorData.isTemperatureNormal ? 'IDÉAL' : 'ALERTE',
+          badgeColor: sensorData.isTemperatureNormal ? AppColors.success : AppColors.error,
           onTap: () => context.go(AppRoutes.surveillance),
         ),
 
@@ -282,7 +285,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           icon: Icons.water_drop_rounded,
           iconColor: AppColors.secondary,
           label: 'Humidité',
-          value: '${sensorData.humidity}%',
+          value: '${sensorData.humidity.toStringAsFixed(0)}%',
+          badge: sensorData.isHumidityIdeal ? 'IDÉAL' : 'ALERTE',
+          badgeColor: sensorData.isHumidityIdeal ? AppColors.success : AppColors.warning,
           onTap: () => context.go(AppRoutes.surveillance),
         ),
 
@@ -291,7 +296,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           icon: Icons.directions_run_rounded,
           iconColor: AppColors.primary,
           label: 'Mouvement',
-          value: 'Calme',
+          value: (sensorData.movement.toLowerCase() == 'agité') ? 'Présent' : 'Vide',
           onTap: () => context.go(AppRoutes.surveillance),
         ),
 
@@ -300,7 +305,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           icon: Icons.favorite_rounded,
           iconColor: AppColors.primary,
           label: 'Présence',
-          value: 'Bébé\nprésent',
+          value: sensorData.babyPresent ? 'Présent' : 'Vide',
           onTap: () => context.go(AppRoutes.surveillance),
         ),
       ],

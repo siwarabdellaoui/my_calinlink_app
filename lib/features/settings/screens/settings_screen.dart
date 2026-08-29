@@ -109,9 +109,12 @@ class SettingsScreen extends ConsumerWidget {
                       decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
-                        image: userProfile.avatar.isNotEmpty && userProfile.avatar.contains(',')
+                        image: userProfile.avatar.isNotEmpty
                             ? DecorationImage(
-                                image: MemoryImage(base64Decode(userProfile.avatar.split(',').last)),
+                                image: MemoryImage(base64Decode(
+                                    userProfile.avatar.contains(',')
+                                        ? userProfile.avatar.split(',').last
+                                        : userProfile.avatar)),
                                 fit: BoxFit.cover,
                               )
                             : null,

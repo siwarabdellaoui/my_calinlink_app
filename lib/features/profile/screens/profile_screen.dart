@@ -201,17 +201,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   AppColors.primary.withValues(alpha: 0.2),
                                   AppColors.primary.withValues(alpha: 0.05),
                                 ],
-                              ),
-                              image: _base64Image != null &&
-                                      _base64Image!.contains(',')
+                              ),                              image: _base64Image != null && _base64Image!.isNotEmpty
                                   ? DecorationImage(
                                       image: MemoryImage(base64Decode(
-                                          _base64Image!.split(',').last)),
+                                          _base64Image!.contains(',')
+                                              ? _base64Image!.split(',').last
+                                              : _base64Image!)),
                                       fit: BoxFit.cover,
                                     )
                                   : null,
                             ),
-                            child: _base64Image == null
+                            child: _base64Image == null || _base64Image!.isEmpty
                                 ? Center(
                                     child: Text(
                                       '${_firstNameController.text.isNotEmpty ? _firstNameController.text[0] : ''}${_lastNameController.text.isNotEmpty ? _lastNameController.text[0] : ''}'

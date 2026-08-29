@@ -28,13 +28,26 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
     // Règle de filtrage simple selon l'onglet
     final filteredAlerts = allAlerts.where((alert) {
       if (_selectedFilterIndex == 0) return true; // Toutes
-      if (_selectedFilterIndex == 1)
+
+      final titleLower = alert.title.toLowerCase();
+      final descLower = alert.description.toLowerCase();
+      final isMovement = titleLower.contains('mouvement') ||
+          descLower.contains('mouvement') ||
+          titleLower.contains('bouge') ||
+          descLower.contains('bouge') ||
+          titleLower.contains('agite') ||
+          descLower.contains('agite') ||
+          alert.severity == 'warning';
+
+      if (_selectedFilterIndex == 1) {
         return alert.severity == 'critical'; // Critiques
-      if (_selectedFilterIndex == 2)
-        return alert.severity == 'warning'; // Mouvements
-      if (_selectedFilterIndex == 3)
-        return alert.severity == 'info' ||
-            alert.severity == 'success'; // Système
+      }
+      if (_selectedFilterIndex == 2) {
+        return isMovement; // Mouvements
+      }
+      if (_selectedFilterIndex == 3) {
+        return !isMovement && alert.severity != 'critical'; // Système
+      }
       return true;
     }).toList();
 
@@ -99,14 +112,39 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
             ),
             const SizedBox(height: 4),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                'Dernières activités de bébé',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: context.textSecondary,
-                ),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Dernières activités de bébé',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: context.textSecondary,
+                    ),
+                  ),
+                  if (allAlerts.isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        ref.read(alertsProvider.notifier).clearAllAlerts();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Toutes les alertes ont été effacées'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Effacer tout',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.error,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
 
@@ -192,18 +230,45 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
                           icon = Icons.thermostat_rounded;
                         }
 
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            // Extra space at bottom of last element
-                            bottom:
-                                index == filteredAlerts.length - 1 ? 120 : 16,
+                        return Dismissible(
+                          key: Key(alert.id),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 24),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: AppColors.error,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Icon(
+                              Icons.delete_outline_rounded,
+                              color: Colors.white,
+                              size: 28,
+                            ),
                           ),
-                          child: _AlertCard(
-                            title: alert.title,
-                            description: alert.description,
-                            time: alert.time,
-                            iconData: icon,
-                            color: color,
+                          onDismissed: (direction) {
+                            ref.read(alertsProvider.notifier).clearAlert(alert.id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Alerte supprimée'),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              // Extra space at bottom of last element
+                              bottom:
+                                  index == filteredAlerts.length - 1 ? 120 : 16,
+                            ),
+                            child: _AlertCard(
+                              title: alert.title,
+                              description: alert.description,
+                              time: alert.time,
+                              iconData: icon,
+                              color: color,
+                            ),
                           ),
                         );
                       },

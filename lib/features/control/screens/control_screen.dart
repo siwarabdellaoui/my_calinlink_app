@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/router/app_router.dart';
+import '../../../shared/providers/sensor_provider.dart';
+import '../../../shared/models/sensor_data.dart';
+import '../../../services/socket_service.dart';
+
 export 'control_screen.dart';
 
-class ControlScreen extends StatefulWidget {
+class ControlScreen extends ConsumerStatefulWidget {
   const ControlScreen({super.key});
 
   @override
-  State<ControlScreen> createState() => _ControlScreenState();
+  ConsumerState<ControlScreen> createState() => _ControlScreenState();
 }
 
-class _ControlScreenState extends State<ControlScreen> {
+class _ControlScreenState extends ConsumerState<ControlScreen> {
   bool _nightModeActive = true;
   bool _nightLightActive = true;
   bool _musicActive = false;
@@ -19,6 +24,8 @@ class _ControlScreenState extends State<ControlScreen> {
   double _musicVolume = 0.7;
   String _selectedMusic = 'Douce Nuit';
   String _nightModeTime = '20h00';
+  bool _showActionFeedback = false;
+  String _feedbackMessage = '';
 
   final List<String> _musicList = [
     'Douce Nuit',
@@ -28,8 +35,24 @@ class _ControlScreenState extends State<ControlScreen> {
     'Océan calme',
   ];
 
+  void _triggerFeedback(String message) {
+    setState(() {
+      _feedbackMessage = message;
+      _showActionFeedback = true;
+    });
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _showActionFeedback = false;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final sensorData = ref.watch(sensorProvider);
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -59,18 +82,30 @@ class _ControlScreenState extends State<ControlScreen> {
                 ),
               ),
               const SizedBox(height: 28),
+              
               _buildSectionLabel('MODE'),
               const SizedBox(height: 12),
               _buildNightModeCard(),
+              
               const SizedBox(height: 24),
               _buildSectionLabel('CONFORT'),
               const SizedBox(height: 12),
               _buildNightLightCard(),
               const SizedBox(height: 16),
               _buildMusicCard(),
-              const SizedBox(height: 16),
-              _buildActionSentCard(),
+              
               const SizedBox(height: 24),
+              _buildSectionLabel('IOT & ÉQUIPEMENTS LIT'),
+              const SizedBox(height: 12),
+              _buildFanCard(sensorData),
+              const SizedBox(height: 16),
+              _buildCryingCard(sensorData),
+              
+              const SizedBox(height: 24),
+              if (_showActionFeedback) ...[
+                _buildActionSentCard(_feedbackMessage),
+                const SizedBox(height: 24),
+              ],
             ],
           ),
         ),
@@ -90,7 +125,7 @@ class _ControlScreenState extends State<ControlScreen> {
               color: AppColors.primary.withOpacity(0.15),
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.person_rounded,
               color: AppColors.primary,
               size: 22,
@@ -98,7 +133,7 @@ class _ControlScreenState extends State<ControlScreen> {
           ),
         ),
         const SizedBox(width: 10),
-        Text(
+        const Text(
           'CâlinLink',
           style: TextStyle(
             fontSize: 18,
@@ -122,7 +157,7 @@ class _ControlScreenState extends State<ControlScreen> {
                 ),
               ],
             ),
-            child: Icon(
+            child: const Icon(
               Icons.notifications_rounded,
               color: AppColors.primary,
               size: 22,
@@ -192,9 +227,10 @@ class _ControlScreenState extends State<ControlScreen> {
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () => setState(
-                  () => _nightModeActive = !_nightModeActive,
-                ),
+                onTap: () {
+                  setState(() => _nightModeActive = !_nightModeActive);
+                  _triggerFeedback('Mode Nuit ${_nightModeActive ? 'activé' : 'désactivé'}');
+                },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   width: 50,
@@ -225,7 +261,7 @@ class _ControlScreenState extends State<ControlScreen> {
             ],
           ),
           const SizedBox(height: 16),
-           Text(
+          const Text(
             'Mode Nuit',
             style: TextStyle(
               fontSize: 28,
@@ -234,7 +270,7 @@ class _ControlScreenState extends State<ControlScreen> {
             ),
           ),
           const SizedBox(height: 8),
-           Text(
+          const Text(
             'Optimise la veilleuse et réduit\nles alertes pour un sommeil profond.',
             style: TextStyle(
               fontSize: 13,
@@ -298,7 +334,7 @@ class _ControlScreenState extends State<ControlScreen> {
                   color: Colors.amber.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.lightbulb_rounded,
                   color: Colors.amber,
                   size: 22,
@@ -328,9 +364,14 @@ class _ControlScreenState extends State<ControlScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: () => setState(
-                  () => _nightLightActive = !_nightLightActive,
-                ),
+                onTap: () {
+                  setState(() => _nightLightActive = !_nightLightActive);
+                  ref.read(socketServiceProvider).socket?.emit('calinlink:cmd', {
+                    'action': 'veilleuse',
+                    'value': _nightLightActive,
+                  });
+                  _triggerFeedback('Veilleuse ${_nightLightActive ? 'allumée' : 'éteinte'}');
+                },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   width: 50,
@@ -382,12 +423,11 @@ class _ControlScreenState extends State<ControlScreen> {
                     ),
                     child: Slider(
                       value: _nightLightIntensity,
-                      onChanged: (v) =>
-                          setState(() => _nightLightIntensity = v),
+                      onChanged: (v) => setState(() => _nightLightIntensity = v),
                     ),
                   ),
                 ),
-                 Icon(
+                const Icon(
                   Icons.brightness_high_rounded,
                   color: AppColors.primary,
                   size: 18,
@@ -439,15 +479,14 @@ class _ControlScreenState extends State<ControlScreen> {
                   color: AppColors.secondary.withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.music_note_rounded,
                   color: AppColors.secondary,
                   size: 22,
                 ),
               ),
               const SizedBox(width: 12),
-              
-               Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -470,14 +509,20 @@ class _ControlScreenState extends State<ControlScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: () => setState(() => _musicActive = !_musicActive),
+                onTap: () {
+                  setState(() => _musicActive = !_musicActive);
+                  ref.read(socketServiceProvider).socket?.emit('calinlink:cmd', {
+                    'action': 'berceuse',
+                    'value': _musicActive,
+                  });
+                  _triggerFeedback('Berceuse ${_musicActive ? 'activée' : 'arrêtée'}');
+                },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   width: 50,
                   height: 28,
                   decoration: BoxDecoration(
-                    color:
-                        _musicActive ? AppColors.primary : Colors.grey.shade300,
+                    color: _musicActive ? AppColors.primary : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: AnimatedAlign(
@@ -504,7 +549,14 @@ class _ControlScreenState extends State<ControlScreen> {
             ...List.generate(_musicList.length, (i) {
               final isSelected = _musicList[i] == _selectedMusic;
               return GestureDetector(
-                onTap: () => setState(() => _selectedMusic = _musicList[i]),
+                onTap: () {
+                  setState(() => _selectedMusic = _musicList[i]);
+                  ref.read(socketServiceProvider).socket?.emit('calinlink:cmd', {
+                    'action': 'berceuse_select',
+                    'value': _musicList[i],
+                  });
+                  _triggerFeedback('Sélection de berceuse : ${_musicList[i]}');
+                },
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.symmetric(
@@ -517,20 +569,15 @@ class _ControlScreenState extends State<ControlScreen> {
                         : const Color(0xFFF8F0F5),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color:
-                          isSelected ? AppColors.primary : Colors.transparent,
+                      color: isSelected ? AppColors.primary : Colors.transparent,
                       width: 1.5,
                     ),
                   ),
                   child: Row(
                     children: [
                       Icon(
-                        isSelected
-                            ? Icons.music_note_rounded
-                            : Icons.music_note_outlined,
-                        color: isSelected
-                            ? AppColors.primary
-                            : context.textSecondary,
+                        isSelected ? Icons.music_note_rounded : Icons.music_note_outlined,
+                        color: isSelected ? AppColors.primary : context.textSecondary,
                         size: 18,
                       ),
                       const SizedBox(width: 12),
@@ -539,17 +586,13 @@ class _ControlScreenState extends State<ControlScreen> {
                           _musicList[i],
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: isSelected
-                                ? FontWeight.w700
-                                : FontWeight.normal,
-                            color: isSelected
-                                ? AppColors.primary
-                                : context.textPrimary,
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
+                            color: isSelected ? AppColors.primary : context.textPrimary,
                           ),
                         ),
                       ),
                       if (isSelected)
-                         Icon(
+                        const Icon(
                           Icons.check_circle_rounded,
                           color: AppColors.primary,
                           size: 18,
@@ -584,7 +627,7 @@ class _ControlScreenState extends State<ControlScreen> {
                     ),
                   ),
                 ),
-                 Icon(
+                const Icon(
                   Icons.volume_up_rounded,
                   color: AppColors.secondary,
                   size: 18,
@@ -607,7 +650,197 @@ class _ControlScreenState extends State<ControlScreen> {
     );
   }
 
-  Widget _buildActionSentCard() {
+  // Contrôle du ventilateur connecté
+  Widget _buildFanCard(SensorData sensorData) {
+    final isFanActive = sensorData.ventilateurActif ?? false;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.15),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.wind_power_rounded,
+              color: AppColors.primary,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Ventilateur',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: context.textPrimary,
+                  ),
+                ),
+                Text(
+                  'Régulation thermique du lit',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              final newValue = !isFanActive;
+              ref.read(socketServiceProvider).socket?.emit('calinlink:cmd', {
+                'action': 'ventilateur',
+                'value': newValue,
+              });
+              _triggerFeedback('Commande ventilateur : ${newValue ? "allumé" : "éteint"}');
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: 50,
+              height: 28,
+              decoration: BoxDecoration(
+                color: isFanActive ? AppColors.success : Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 300),
+                alignment: isFanActive ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                  margin: const EdgeInsets.all(3),
+                  width: 22,
+                  height: 22,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Contrôle du simulateur de pleurs
+  Widget _buildCryingCard(SensorData sensorData) {
+    final isCryingSimulated = sensorData.pleursSimules ?? false;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.15),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.error.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.campaign_rounded,
+              color: AppColors.error,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Simulation Pleurs',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: context.textPrimary,
+                  ),
+                ),
+                Text(
+                  'Activer/Désactiver le test de pleurs',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              final newValue = !isCryingSimulated;
+              ref.read(socketServiceProvider).socket?.emit('calinlink:cmd', {
+                'action': 'pleurs_simules',
+                'value': newValue,
+              });
+              _triggerFeedback('Commande pleurs simulés : ${newValue ? "démarré" : "arrêté"}');
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: 50,
+              height: 28,
+              decoration: BoxDecoration(
+                color: isCryingSimulated ? AppColors.error : Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 300),
+                alignment: isCryingSimulated ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                  margin: const EdgeInsets.all(3),
+                  width: 22,
+                  height: 22,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionSentCard(String message) {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 20,
@@ -626,19 +859,21 @@ class _ControlScreenState extends State<ControlScreen> {
               color: AppColors.success,
               shape: BoxShape.circle,
             ),
-            child:  Icon(
+            child: const Icon(
               Icons.check_rounded,
               color: Colors.white,
               size: 18,
             ),
           ),
           const SizedBox(width: 14),
-           Text(
-            'Action envoyée au lit',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
           ),
         ],
@@ -664,10 +899,9 @@ class _ControlScreenState extends State<ControlScreen> {
 
     if (picked != null && mounted) {
       setState(() {
-        _nightModeTime =
-            '${picked.hour}h${picked.minute.toString().padLeft(2, '0')}';
+        _nightModeTime = '${picked.hour}h${picked.minute.toString().padLeft(2, '0')}';
       });
+      _triggerFeedback('Horaire mode nuit : $_nightModeTime');
     }
   }
 }
-

@@ -20,6 +20,8 @@ class AlertModel {
 }
 
 class AlertsNotifier extends StateNotifier<List<AlertModel>> {
+  Timer? _timer;
+
   AlertsNotifier() : super([]) {
     _loadInitialAlerts();
     _startSimulatingAlerts();
@@ -49,7 +51,7 @@ class AlertsNotifier extends StateNotifier<List<AlertModel>> {
 
   void _startSimulatingAlerts() {
     // Adds a fake critical alert every 30 seconds for demonstration
-    Timer.periodic(const Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
       final newAlert = AlertModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: 'Bruit détecté',
@@ -66,6 +68,22 @@ class AlertsNotifier extends StateNotifier<List<AlertModel>> {
 
   void clearAlert(String id) {
     state = state.where((alert) => alert.id != id).toList();
+  }
+
+  void clearAllAlerts() {
+    state = [];
+  }
+
+  void addAlert(AlertModel alert) {
+    _timer?.cancel();
+    _timer = null;
+    state = [alert, ...state];
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 }
 

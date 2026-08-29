@@ -26,17 +26,20 @@ class UserService {
             throw new CustomError('Utilisateur non trouvé', 404);
         }
 
-        user.firstName = updateData.firstName || user.firstName;
-        user.lastName = updateData.lastName || user.lastName;
-        user.phone = updateData.phone || user.phone;
-        
-        if (updateData.avatar) user.avatar = updateData.avatar;
-        if (updateData.password) user.password = updateData.password;
+        if (updateData.firstName !== undefined) user.firstName = updateData.firstName;
+        if (updateData.lastName !== undefined) user.lastName = updateData.lastName;
+        if (updateData.phone !== undefined) user.phone = updateData.phone;
+        if (updateData.avatar !== undefined) user.avatar = updateData.avatar;
+        if (updateData.password !== undefined) user.password = updateData.password;
 
         if (updateData.babyContext) {
-            user.babyContext.firstName = updateData.babyContext.firstName || user.babyContext.firstName;
-            user.babyContext.birthDate = updateData.babyContext.birthDate || user.babyContext.birthDate;
-            user.babyContext.gender = updateData.babyContext.gender || user.babyContext.gender;
+            if (!user.babyContext) {
+                user.babyContext = {};
+            }
+            if (updateData.babyContext.firstName !== undefined) user.babyContext.firstName = updateData.babyContext.firstName;
+            if (updateData.babyContext.birthDate !== undefined) user.babyContext.birthDate = updateData.babyContext.birthDate;
+            if (updateData.babyContext.gender !== undefined) user.babyContext.gender = updateData.babyContext.gender;
+            user.markModified('babyContext');
         }
 
         const updatedUser = await userRepository.save(user);
