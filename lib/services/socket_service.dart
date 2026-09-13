@@ -120,13 +120,17 @@ class SocketService {
       String title = 'Alerte Lit';
       String severity = 'warning';
 
+      if (data is Map && data['severity'] != null) {
+        severity = data['severity'].toString();
+      }
+
       final msgLower = alertMessage.toLowerCase();
       if (msgLower.contains('mouvement') || msgLower.contains('bouge') || msgLower.contains('agite')) {
         title = 'Alerte Mouvement';
-        severity = 'warning';
-      } else if (msgLower.contains('température') || msgLower.contains('temperature') || msgLower.contains('trop elevee') || msgLower.contains('trop basse')) {
+        if (data is! Map || data['severity'] == null) severity = 'warning';
+      } else if (msgLower.contains('température') || msgLower.contains('temperature') || msgLower.contains('trop elevee') || msgLower.contains('trop basse') || msgLower.contains('élevée') || msgLower.contains('elevee') || msgLower.contains('ventilateur')) {
         title = 'Alerte Température';
-        severity = msgLower.contains('trop') || msgLower.contains('danger') ? 'critical' : 'warning';
+        severity = 'critical';
       } else if (msgLower.contains('pleurs') || msgLower.contains('bruit') || msgLower.contains('crie')) {
         title = 'Alerte Sonore';
         severity = 'critical';
@@ -138,11 +142,13 @@ class SocketService {
             timestampVal.toString().length == 10 ? timestampVal * 1000 : timestampVal);
       }
 
+      final timeFormatted = '${alertTime.hour.toString().padLeft(2, '0')}:${alertTime.minute.toString().padLeft(2, '0')}';
+
       final alert = AlertModel(
         id: alertTime.millisecondsSinceEpoch.toString(),
         title: title,
         description: alertMessage,
-        time: 'MAINTENANT',
+        time: 'À $timeFormatted',
         severity: severity,
         createdAt: alertTime,
       );

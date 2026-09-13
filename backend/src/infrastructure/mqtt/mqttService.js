@@ -16,6 +16,8 @@ const MQTT_TOPIC_ALERT = 'calinlink/alertes';
 // =========================================================
 
 let mqttClient = null;
+let isFanAutoActivated = false;
+let lastTempAlertTime = 0;
 
 
 // =========================================================
@@ -180,6 +182,55 @@ function initMQTT(io) {
                         data
                     );
 
+                    // =========================================
+                    // GESTION AUTOMATIQUE TEMPÉRATURE > 35°C
+                    // =========================================
+                    const temp = Number(data.temperature ?? data.temp ?? data.temperature_ambient);
+                    if (!isNaN(temp)) {
+                        if (temp > 25) {
+                            // Message affiché au backend
+                            console.log('');
+                            console.log('🚨 ========================================================');
+                            console.log(`🚨 ALERTE : Température élevée détectée (${temp} °C > 35 °C) !`);
+                            console.log('🚨 Action : Activation automatique du ventilateur en cours...');
+                            console.log('🚨 ========================================================');
+                            console.log('');
+
+                            // 1. Activer le ventilateur via MQTT (pour Wokwi / ESP32 sur GPIO 26)
+                            publishMQTT('calinlink/commande/ventilateur', '1');
+                            publishMQTT('calinlink/cmd/ventilateur', '1');
+                            isFanAutoActivated = true;
+                            data.ventilateur_actif = true;
+
+                            // 2. Envoyer une alerte vers Flutter via Socket.IO
+                            const now = Date.now();
+                            if (now - lastTempAlertTime > 20000) {
+                                lastTempAlertTime = now;
+                                const alertData = {
+                                    message: `Température trop élevée (${temp}°C) ! Le ventilateur a été activé automatiquement.`,
+                                    timestamp: now,
+                                    severity: 'critical'
+                                };
+
+                                if (io) {
+                                    io.emit('calinlink:alert', alertData);
+                                    console.log('Alerte de température élevée transmise à l\'application Flutter via Socket.IO');
+                                }
+                            }
+                        } else if (temp <= 30 && isFanAutoActivated) {
+                            console.log('');
+                            console.log('✅ ========================================================');
+                            console.log(`✅ Température stabilisée (${temp} °C <= 30 °C).`);
+                            console.log('✅ Désactivation automatique du ventilateur.');
+                            console.log('✅ ========================================================');
+                            console.log('');
+
+                            publishMQTT('calinlink/commande/ventilateur', '0');
+                            publishMQTT('calinlink/cmd/ventilateur', '0');
+                            isFanAutoActivated = false;
+                            data.ventilateur_actif = false;
+                        }
+                    }
 
                     // =========================================
                     // ENVOI VERS SOCKET.IO
